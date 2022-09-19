@@ -1,0 +1,43 @@
+- name: install webmin
+  hosts: workstation-ansible-tests
+  become: yes
+  tasks:
+    - name: install pre-requirement
+      yum:
+        name: "{{item}}"
+        state: latest
+      with_items:
+        - perl
+        - perl-Net-SSLeay
+        - openssl
+        - perl-IO-Tty
+        - perl-Encode-Detect
+      tags:
+      - install-pre-reguirement
+
+    - name: download rpm file
+      get_url:
+        url: http://prdownloads.sourceforge.net/webadmin/webmin-2.000-1.noarch.rpm
+        dest: /BinaryFiles/webmin-2.000-1.noarch.rpm
+        mode: '0755'
+      tags:
+        - download-webmin-rpm-file
+
+    - name: Install Webmin RPM
+      yum:
+        name: /BinaryFiles/webmin-2.000-1.noarch.rpm
+        state: latest
+      tags:
+      - install-webmin-from-rpm
+    - name: allow port on firewall
+      firewalld:
+        port: 10000/tcp
+        permanent: yes
+        state: enabled
+      notify: restart firewalld
+
+  handlers:
+    - name: restart firewalld
+      service:
+        name: firewalld
+        state: restarted
