@@ -1,4 +1,6 @@
 - name: install webmin
+  # a storedhosts file in the repository, contained hosts
+  # if you want to add hosts, please use this file
   hosts: workstation-ansible-tests
   become: yes
   tasks:
